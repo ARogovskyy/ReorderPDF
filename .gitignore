@@ -1,0 +1,7 @@
+.settings/
+.vs/
+bin/
+target/
+.classpath
+.project
+*.fxbuild
