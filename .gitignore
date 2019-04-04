@@ -2,6 +2,7 @@
 .vs/
 bin/
 target/
+build/
 .classpath
 .project
 *.fxbuild

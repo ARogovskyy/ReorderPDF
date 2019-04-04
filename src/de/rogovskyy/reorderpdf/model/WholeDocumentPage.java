@@ -11,7 +11,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
-public class WholeDocumentPage implements DocumentPage{
+public class WholeDocumentPage implements DocumentPage, PDFReference{
 	private static final Log log = LogFactory.getLog(WholeDocumentPage.class);
 	
 	private final String docName;

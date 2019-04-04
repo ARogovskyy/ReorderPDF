@@ -11,8 +11,8 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
-public class PDFPage implements DocumentPage {
-	private static final Log log = LogFactory.getLog(PDFPage.class);
+public class SinglePDFPage implements DocumentPage, PDFReference {
+	private static final Log log = LogFactory.getLog(SinglePDFPage.class);
 
 	private final String name;
 	private final PDDocument pdf;
@@ -20,7 +20,7 @@ public class PDFPage implements DocumentPage {
 	private final PDPage page;
 	private final Image rendered;
 
-	public PDFPage(String name, PDDocument pdf, int pageNum) {
+	public SinglePDFPage(String name, PDDocument pdf, int pageNum) {
 		this.name = name;
 		this.pdf = pdf;
 		this.pageNum = pageNum;

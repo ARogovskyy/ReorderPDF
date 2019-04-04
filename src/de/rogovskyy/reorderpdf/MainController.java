@@ -14,6 +14,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -27,6 +28,9 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class MainController {
 	private final PagesManager mgr = new PagesManager();
 
+	@FXML
+	public Label infoTxt;
+	
 	@FXML
 	public ListView<DocumentPage> pagesView;
 
@@ -62,7 +66,8 @@ public class MainController {
 		downBtn.disableProperty().bind(dependsOnSelected((i, s) -> i == -1 || i == mgr.getDocumentPages().size() - 1));
 		removeBtn.disableProperty().bind(dependsOnSelected((i, s) -> s == null));
 		saveBtn.disableProperty().bind(Bindings.equal(Bindings.size(mgr.documentPagesProperty()), 0));
-
+		infoTxt.visibleProperty().bind(Bindings.equal(Bindings.size(mgr.documentPagesProperty()), 0));
+		
 		addBtn.setOnAction((ae) -> {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.getExtensionFilters().addAll(new ExtensionFilter("PDF File", "*.pdf"),
@@ -125,7 +130,7 @@ public class MainController {
 
 		removeBtn.setOnAction((ae) -> {
 			int i = pagesView.getSelectionModel().getSelectedIndex();
-			mgr.getDocumentPages().remove(i);
+			mgr.remove(i);
 			if (mgr.getDocumentPages().size() > 0) {
 				pagesView.getSelectionModel().select(i);
 				pagesView.requestFocus();
@@ -148,5 +153,9 @@ public class MainController {
 		return new Background(
 				new BackgroundImage(selected.getImage(), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
 						BackgroundPosition.CENTER, new BackgroundSize(0, 0, false, false, true, false)));
+	}
+
+	public void close() {
+		mgr.close();
 	}
 }
