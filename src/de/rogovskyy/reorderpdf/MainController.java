@@ -1,12 +1,14 @@
 package de.rogovskyy.reorderpdf;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.function.BiFunction;
-
 import de.rogovskyy.reorderpdf.model.DocumentPage;
 import de.rogovskyy.reorderpdf.model.PagesManager;
 import de.rogovskyy.reorderpdf.model.WholeDocumentPage;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.function.BiFunction;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.fxml.FXML;
@@ -27,10 +29,11 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 public class MainController {
 	private final PagesManager mgr = new PagesManager();
+	private File lastDir = null;
 
 	@FXML
 	public Label infoTxt;
-	
+
 	@FXML
 	public ListView<DocumentPage> pagesView;
 
@@ -67,16 +70,24 @@ public class MainController {
 		removeBtn.disableProperty().bind(dependsOnSelected((i, s) -> s == null));
 		saveBtn.disableProperty().bind(Bindings.equal(Bindings.size(mgr.documentPagesProperty()), 0));
 		infoTxt.visibleProperty().bind(Bindings.equal(Bindings.size(mgr.documentPagesProperty()), 0));
-		
+
 		addBtn.setOnAction((ae) -> {
 			FileChooser fileChooser = new FileChooser();
+
+			if (lastDir != null) {
+				fileChooser.setInitialDirectory(lastDir);
+			}
 			fileChooser.getExtensionFilters().addAll(new ExtensionFilter("PDF File", "*.pdf"),
 					new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif"));
-			File selectedFile = fileChooser.showOpenDialog(addBtn.getScene().getWindow());
-			if (selectedFile == null)
+			List<File> selectedFiles = fileChooser.showOpenMultipleDialog(addBtn.getScene().getWindow());
+			if (selectedFiles == null || selectedFiles.size() == 0)
 				return; // user clicked cancel
 			try {
-				mgr.loadFile(selectedFile);
+				File selectedDir = selectedFiles.get(0).getParentFile();
+				lastDir = selectedDir.isDirectory() ? selectedDir : null;
+				for (File selectedFile : selectedFiles) {
+					mgr.loadFile(selectedFile);
+				}
 			} catch (IOException e) {
 				Alert alert = new Alert(AlertType.ERROR, e.getMessage(), ButtonType.CLOSE);
 				alert.showAndWait();
