@@ -1,9 +1,5 @@
 package de.rogovskyy.reorderpdf.model;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -11,6 +7,10 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
@@ -49,7 +49,17 @@ public class ImagePage implements DocumentPage {
 		PDPage newPage = new PDPage(getTargetRect() == null ? PDRectangle.A4 : getTargetRect());
 		try (PDPageContentStream contentStream = new PDPageContentStream(doc, newPage, AppendMode.OVERWRITE, true,
 				true)) {
-			contentStream.drawImage(pdfImage, 0, 0, pdfImage.getWidth(), pdfImage.getHeight());
+			float factor;
+			if (pdfImage.getWidth() > pdfImage.getHeight()) {
+				factor = pdfImage.getWidth() / newPage.getMediaBox().getWidth();
+			} else {
+				factor = pdfImage.getHeight() / newPage.getMediaBox().getHeight();
+			}
+			float targetW = pdfImage.getWidth() / factor;
+			float targetH = pdfImage.getHeight() / factor;
+			float targetX = (newPage.getMediaBox().getWidth() - targetW) / 2;
+			float targetY = (newPage.getMediaBox().getHeight() - targetH) / 2;
+			contentStream.drawImage(pdfImage, targetX, targetY, targetW, targetH);
 		}
 		doc.addPage(newPage);
 	}
